@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 
 namespace dev.hongjun.mc
 {
-    public enum SurfaceTexture
+    public enum SurfaceTexture : ushort
     {
         STONE = 0,
         DIRT = 1,

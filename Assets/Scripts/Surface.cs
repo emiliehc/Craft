@@ -1,16 +1,17 @@
-using Unity.VisualScripting;
+using Unity.Mathematics;
 using UnityEngine;
+using static Unity.Mathematics.math;
 
 namespace dev.hongjun.mc
 {
-    public enum CubeSurface
+    public enum CubeSurface : byte
     {
-        FRONT, TOP, RIGHT, LEFT, BACK, BOTTOM
+        BACK = 0, FRONT = 1, BOTTOM = 2, TOP = 3, LEFT = 4, RIGHT = 5
     }
     
     public struct Surface
     {
-        public Vector3Int position;
+        public int3 position;
         public CubeSurface cubeSurface;
         public SurfaceTexture texture;
     }

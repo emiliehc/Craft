@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Unity.Mathematics.math;
+using Unity.Mathematics;
 
 namespace dev.hongjun.mc
 {
@@ -77,7 +79,7 @@ namespace dev.hongjun.mc
 
             foreach (var voxel in voxels)
             {
-                vertices.AddRange(cube.Select(vertex => voxel.position + vertex));
+                vertices.AddRange(cube.Select(vertex => (Vector3)(float3)voxel.position + vertex));
                 
                 for (var i = 0; i < 6; i++) // per face
                 {
