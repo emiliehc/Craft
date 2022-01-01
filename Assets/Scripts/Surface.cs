@@ -6,18 +6,19 @@ namespace dev.hongjun.mc
 {
     public enum CubeFace : byte
     {
-        BACK = 0,
-        FRONT = 1,
+        LEFT = 0,
+        RIGHT = 1,
         BOTTOM = 2,
         TOP = 3,
-        LEFT = 4,
-        RIGHT = 5
+        BACK = 4,
+        FRONT = 5
     }
 
     public static class CubeSurfaceExt
     {
         private static readonly Vector3[][] cube =
         {
+            // -x (left)
             new Vector3[]
             {
                 new(-0.5f, -0.5f, 0.5f),
@@ -25,6 +26,7 @@ namespace dev.hongjun.mc
                 new(-0.5f, 0.5f, -0.5f),
                 new(-0.5f, -0.5f, -0.5f),
             },
+            // +x (right)
             new Vector3[]
             {
                 new(0.5f, -0.5f, -0.5f),
@@ -32,6 +34,7 @@ namespace dev.hongjun.mc
                 new(0.5f, 0.5f, 0.5f),
                 new(0.5f, -0.5f, 0.5f),
             },
+            // -y (bottom)
             new Vector3[]
             {
                 new(-0.5f, -0.5f, 0.5f),
@@ -39,6 +42,7 @@ namespace dev.hongjun.mc
                 new(0.5f, -0.5f, -0.5f),
                 new(0.5f, -0.5f, 0.5f),
             },
+            // +y (top)
             new Vector3[]
             {
                 new(0.5f, 0.5f, 0.5f),
@@ -46,6 +50,7 @@ namespace dev.hongjun.mc
                 new(-0.5f, 0.5f, -0.5f),
                 new(-0.5f, 0.5f, 0.5f),
             },
+            // -z (back)
             new Vector3[]
             {
                 new(-0.5f, -0.5f, -0.5f),
@@ -53,6 +58,7 @@ namespace dev.hongjun.mc
                 new(0.5f, 0.5f, -0.5f),
                 new(0.5f, -0.5f, -0.5f),
             },
+            // +z (front)
             new Vector3[]
             {
                 new(0.5f, -0.5f, 0.5f),

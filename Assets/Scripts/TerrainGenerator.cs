@@ -9,52 +9,53 @@ namespace dev.hongjun.mc
 {
     public class TerrainGenerator
     {
-        private static readonly Vector3[] cube = {
-            // back (negative x)
-            new(-0.5f, -0.5f, 0.5f),
-            new(-0.5f, 0.5f, 0.5f),
-            new(-0.5f, 0.5f, -0.5f),
-            new(-0.5f, -0.5f, -0.5f),
-
-            // front (positive x)
-            new(0.5f, -0.5f, -0.5f),
-            new(0.5f, 0.5f, -0.5f),
-            new(0.5f, 0.5f, 0.5f),
-            new(0.5f, -0.5f, 0.5f),
-            
-            // bottom (negative y)
-            new(-0.5f, -0.5f, 0.5f),
-            new(-0.5f, -0.5f, -0.5f),
-            new(0.5f, -0.5f, -0.5f),
-            new(0.5f, -0.5f, 0.5f),
-
-            // top (positive y)
-            new(0.5f, 0.5f, 0.5f),
-            new(0.5f, 0.5f, -0.5f),
-            new(-0.5f, 0.5f, -0.5f),
-            new(-0.5f, 0.5f, 0.5f),
-            
-            // left (negative z)
-            new(-0.5f, -0.5f, -0.5f),
-            new(-0.5f, 0.5f, -0.5f),
-            new(0.5f, 0.5f, -0.5f),
-            new(0.5f, -0.5f, -0.5f),
-
-            // right (positive z)
-            new(0.5f, -0.5f, 0.5f),
-            new(0.5f, 0.5f, 0.5f),
-            new(-0.5f, 0.5f, 0.5f),
-            new(-0.5f, -0.5f, 0.5f),
-
-            // new Vector3(-0.5f, -0.5f, -0.5f),
-            // new Vector3(0.5f, -0.5f, -0.5f),
-            // new Vector3(0.5f, 0.5f, -0.5f),
-            // new Vector3(-0.5f, 0.5f, -0.5f),
-            // new Vector3(-0.5f, 0.5f, 0.5f),
-            // new Vector3(0.5f, 0.5f, 0.5f),
-            // new Vector3(0.5f, -0.5f, 0.5f),
-            // new Vector3(-0.5f, -0.5f, 0.5f),
-        };
+        // private static readonly Vector3[] cube =
+        // {
+        //     // back (negative x)
+        //     new(-0.5f, -0.5f, 0.5f),
+        //     new(-0.5f, 0.5f, 0.5f),
+        //     new(-0.5f, 0.5f, -0.5f),
+        //     new(-0.5f, -0.5f, -0.5f),
+        //
+        //     // front (positive x)
+        //     new(0.5f, -0.5f, -0.5f),
+        //     new(0.5f, 0.5f, -0.5f),
+        //     new(0.5f, 0.5f, 0.5f),
+        //     new(0.5f, -0.5f, 0.5f),
+        //
+        //     // bottom (negative y)
+        //     new(-0.5f, -0.5f, 0.5f),
+        //     new(-0.5f, -0.5f, -0.5f),
+        //     new(0.5f, -0.5f, -0.5f),
+        //     new(0.5f, -0.5f, 0.5f),
+        //
+        //     // top (positive y)
+        //     new(0.5f, 0.5f, 0.5f),
+        //     new(0.5f, 0.5f, -0.5f),
+        //     new(-0.5f, 0.5f, -0.5f),
+        //     new(-0.5f, 0.5f, 0.5f),
+        //
+        //     // left (negative z)
+        //     new(-0.5f, -0.5f, -0.5f),
+        //     new(-0.5f, 0.5f, -0.5f),
+        //     new(0.5f, 0.5f, -0.5f),
+        //     new(0.5f, -0.5f, -0.5f),
+        //
+        //     // right (positive z)
+        //     new(0.5f, -0.5f, 0.5f),
+        //     new(0.5f, 0.5f, 0.5f),
+        //     new(-0.5f, 0.5f, 0.5f),
+        //     new(-0.5f, -0.5f, 0.5f),
+        //
+        //     // new Vector3(-0.5f, -0.5f, -0.5f),
+        //     // new Vector3(0.5f, -0.5f, -0.5f),
+        //     // new Vector3(0.5f, 0.5f, -0.5f),
+        //     // new Vector3(-0.5f, 0.5f, -0.5f),
+        //     // new Vector3(-0.5f, 0.5f, 0.5f),
+        //     // new Vector3(0.5f, 0.5f, 0.5f),
+        //     // new Vector3(0.5f, -0.5f, 0.5f),
+        //     // new Vector3(-0.5f, -0.5f, 0.5f),
+        // };
 
         private static readonly int[] faceTriangles =
         {
@@ -77,10 +78,16 @@ namespace dev.hongjun.mc
 
             List<Surface> surfaces = new();
 
+            HashSet<int3> setOfExistingVoxels = new();
+
             {
                 var newSurfaces = new Surface[6];
                 foreach (var voxel in voxels)
                 {
+                    var pos = voxel.position;
+                    
+                    
+
                     for (var i = 0; i < 6; i++)
                     {
                         newSurfaces[i] = new()
@@ -92,14 +99,15 @@ namespace dev.hongjun.mc
                     }
 
                     surfaces.AddRange(newSurfaces);
+
+                    setOfExistingVoxels.Add(pos);
                 }
             }
 
 
-
             {
                 var indexOffset = 0;
-                
+
                 // foreach (var voxel in voxels)
                 // {
                 //     vertices.AddRange(cube.Select(vertex => (Vector3)(float3)voxel.position + vertex));
@@ -111,11 +119,11 @@ namespace dev.hongjun.mc
                 //         indexOffset += 4;
                 //     }
                 // }
-                
+
                 foreach (var surface in surfaces)
                 {
                     vertices.AddRange(surface.face.GetUnitVertices()
-                        .Select(vertex => (Vector3)(float3)surface.position + vertex));
+                        .Select(vertex => (Vector3) (float3) surface.position + vertex));
                     uv.AddRange(surface.texture.GetUv());
                     triangles.AddRange(faceTriangles.Select(index => index + indexOffset));
                     indexOffset += 4;
@@ -134,7 +142,7 @@ namespace dev.hongjun.mc
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             mesh.RecalculateTangents();
-            
+
             return mesh;
         }
     }
