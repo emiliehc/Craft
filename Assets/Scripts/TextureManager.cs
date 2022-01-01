@@ -97,10 +97,10 @@ namespace dev.hongjun.mc
                 surfTexToTex[surfaceTex] = t;
             }
 
-            var debugObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            debugObj.name = "Master Texture Debug";
-            debugObj.GetComponent<Renderer>().material.mainTexture = masterTexture;
-            debugObj.transform.localScale = new(textures.Count, 1.0f, 1.0f);
+            // var debugObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            // debugObj.name = "Master Texture Debug";
+            // debugObj.GetComponent<Renderer>().material.mainTexture = masterTexture;
+            // debugObj.transform.localScale = new(textures.Count, 1.0f, 1.0f);
         }
 
         public Vector2[] GetUv(SurfaceTexture tex)
