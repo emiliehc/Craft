@@ -72,6 +72,11 @@ namespace dev.hongjun.mc
         {
             return cube[(int) face];
         }
+
+        public static CubeFace Opposite(this CubeFace face)
+        {
+            return (byte) face % 2 == 0 ? face + 1 : face - 1;
+        }
     }
 
     public struct Surface
