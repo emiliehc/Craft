@@ -75,19 +75,53 @@ namespace dev.hongjun.mc
             List<int> triangles = new();
             List<Vector2> uv = new();
 
-            var indexOffset = 0;
+            List<Surface> surfaces = new();
 
-            foreach (var voxel in voxels)
             {
-                vertices.AddRange(cube.Select(vertex => (Vector3)(float3)voxel.position + vertex));
-                
-                for (var i = 0; i < 6; i++) // per face
+                var newSurfaces = new Surface[6];
+                foreach (var voxel in voxels)
                 {
-                    uv.AddRange(voxel.texId.GetUv());
+                    for (var i = 0; i < 6; i++)
+                    {
+                        newSurfaces[i] = new()
+                        {
+                            position = voxel.position,
+                            face = (CubeFace) i,
+                            texture = voxel.texId,
+                        };
+                    }
+
+                    surfaces.AddRange(newSurfaces);
+                }
+            }
+
+
+
+            {
+                var indexOffset = 0;
+                
+                // foreach (var voxel in voxels)
+                // {
+                //     vertices.AddRange(cube.Select(vertex => (Vector3)(float3)voxel.position + vertex));
+                //     
+                //     for (var i = 0; i < 6; i++) // per face
+                //     {
+                //         uv.AddRange(voxel.texId.GetUv());
+                //         triangles.AddRange(faceTriangles.Select(index => index + indexOffset));
+                //         indexOffset += 4;
+                //     }
+                // }
+                
+                foreach (var surface in surfaces)
+                {
+                    vertices.AddRange(surface.face.GetUnitVertices()
+                        .Select(vertex => (Vector3)(float3)surface.position + vertex));
+                    uv.AddRange(surface.texture.GetUv());
                     triangles.AddRange(faceTriangles.Select(index => index + indexOffset));
                     indexOffset += 4;
                 }
             }
+
 
             var mesh = new Mesh
             {

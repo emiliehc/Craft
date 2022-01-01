@@ -15,7 +15,7 @@ namespace dev.hongjun.mc
                 {
                     for (var z = -y; z <= y; z++)
                     {
-                        terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x + z + 20) % 6));
+                        terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
                     }
                 }
             }
