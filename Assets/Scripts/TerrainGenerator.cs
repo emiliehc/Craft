@@ -9,41 +9,41 @@ namespace dev.hongjun.mc
     {
         private static readonly Vector3[] cube = {
             // back (negative x)
+            new(-0.5f, -0.5f, 0.5f),
             new(-0.5f, 0.5f, 0.5f),
             new(-0.5f, 0.5f, -0.5f),
             new(-0.5f, -0.5f, -0.5f),
-            new(-0.5f, -0.5f, 0.5f),
-            
+
             // front (positive x)
             new(0.5f, -0.5f, -0.5f),
             new(0.5f, 0.5f, -0.5f),
             new(0.5f, 0.5f, 0.5f),
             new(0.5f, -0.5f, 0.5f),
             
-            // left (negative z)
-            new(0.5f, 0.5f, -0.5f),
-            new(0.5f, -0.5f, -0.5f),
-            new(-0.5f, -0.5f, -0.5f),
-            new(-0.5f, 0.5f, -0.5f),
-            
-            // right (positive z)
-            new(-0.5f, -0.5f, 0.5f),
-            new(0.5f, -0.5f, 0.5f),
-            new(0.5f, 0.5f, 0.5f),
-            new(-0.5f, 0.5f, 0.5f),
-            
             // bottom (negative y)
+            new(-0.5f, -0.5f, 0.5f),
             new(-0.5f, -0.5f, -0.5f),
             new(0.5f, -0.5f, -0.5f),
             new(0.5f, -0.5f, 0.5f),
-            new(-0.5f, -0.5f, 0.5f),
-            
+
             // top (positive y)
             new(0.5f, 0.5f, 0.5f),
             new(0.5f, 0.5f, -0.5f),
             new(-0.5f, 0.5f, -0.5f),
             new(-0.5f, 0.5f, 0.5f),
             
+            // left (negative z)
+            new(-0.5f, -0.5f, -0.5f),
+            new(-0.5f, 0.5f, -0.5f),
+            new(0.5f, 0.5f, -0.5f),
+            new(0.5f, -0.5f, -0.5f),
+
+            // right (positive z)
+            new(0.5f, -0.5f, 0.5f),
+            new(0.5f, 0.5f, 0.5f),
+            new(-0.5f, 0.5f, 0.5f),
+            new(-0.5f, -0.5f, 0.5f),
+
             // new Vector3(-0.5f, -0.5f, -0.5f),
             // new Vector3(0.5f, -0.5f, -0.5f),
             // new Vector3(0.5f, 0.5f, -0.5f),
