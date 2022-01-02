@@ -5,7 +5,7 @@ namespace dev.hongjun.mc
 {
     public class TerrainGeneratorTestDriver : MonoBehaviour
     {
-        private void Start()
+        private async void Start()
         {
             var terrainGenerator = new TerrainGenerator();
 
@@ -15,7 +15,7 @@ namespace dev.hongjun.mc
                 {
                     for (var z = -y; z <= y; z++)
                     {
-                        terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
+                        await terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
                     }
                 }
             }

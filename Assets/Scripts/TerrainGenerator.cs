@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using static Unity.Mathematics.math;
 using Unity.Mathematics;
@@ -30,8 +31,9 @@ namespace dev.hongjun.mc
 
         private readonly List<Voxel> voxels = new();
 
-        public void AddVoxel(Voxel voxel)
+        public async Task AddVoxel(Voxel voxel)
         {
+            await Task.Yield();
             voxels.Add(voxel);
             
             List<Surface> newSurfaces = new();
