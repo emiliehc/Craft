@@ -1,8 +1,12 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using static Unity.Mathematics.math;
 using System.Text;
 using JetBrains.Annotations;
+using Mono.Collections.Generic;
 using UnityEngine;
 
 namespace dev.hongjun.mc
@@ -168,20 +172,116 @@ namespace dev.hongjun.mc
         #endregion
     }
 
+    public interface IFlattenable<out T>
+    {
+        T[] Flatten();
+    }
 
-    public readonly unsafe struct Linear2DArrayAccessor<T> where T : unmanaged
+
+    public readonly unsafe struct FlatArray2U<T> : IEnumerable<T> where T : unmanaged
     {
         private readonly T* data;
-        private readonly int width;
-        private readonly int height;
 
-        public Linear2DArrayAccessor(T* data, int width, int height)
+        public int l0 { get; }
+
+        public int l1 { get; }
+
+        public FlatArray2U(T* data, int l0, int l1)
         {
             this.data = data;
-            this.width = width;
-            this.height = height;
+            this.l0 = l0;
+            this.l1 = l1;
         }
 
-        public ref T this[int x, int y] => ref data[y * width + x];
+        public ref T this[int x, int y] => ref data[y * l0 + x];
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (var y = 0; y < l1; y++)
+            {
+                for (var x = 0; x < l0; x++)
+                {
+                    yield return this[x, y];
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    public class FlatArray3M<T> : ICollection<T>, IFlattenable<T>
+    {
+        private T[,,] data;
+        
+        public int l0 { get; }
+        public int l1 { get; }
+        public int l2 { get; }
+
+        public FlatArray3M(int l0, int l1, int l2)
+        {
+            this.l0 = l0;
+            this.l1 = l1;
+            this.l2 = l2;
+
+            data = new T[l0, l1, l2];
+        }
+
+        public ref T this[int x, int y, int z] => ref data[x, y, z];
+        
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (var z = 0; z < l2; z++)
+            {
+                for (var y = 0; y < l1; y++)
+                {
+                    for (var x = 0; x < l0; x++)
+                    {
+                        yield return this[x, y, z];
+                    }
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Clear()
+        {
+            data = new T[l0, l1, l2];
+        }
+
+        public bool Contains(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            var src = Flatten();
+            Array.Copy(src, 0, array, arrayIndex, Count);
+        }
+
+        public bool Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public int Count => l0 * l1 * l2;
+
+        public bool IsReadOnly => false;
+        
+        public T[] Flatten()
+        {
+            return this.ToArray();
+        }
     }
 }

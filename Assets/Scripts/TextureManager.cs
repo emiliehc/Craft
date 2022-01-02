@@ -46,7 +46,7 @@ namespace dev.hongjun.mc
             using var arr = masterTexture.GetPixelData<Color>(0);
 
             var masterTexturePtr = (Color*) arr.GetUnsafePtr();
-            var masterTextureArr = new Linear2DArrayAccessor<Color>(masterTexturePtr, 16 * textures.Count, 16);
+            var masterTextureArr = new FlatArray2U<Color>(masterTexturePtr, 16 * textures.Count, 16);
 
             Debug.Log(arr.Length);
 
@@ -56,7 +56,7 @@ namespace dev.hongjun.mc
                 using var data = t.GetPixelData<Color>(0);
 
                 var dataPtr = (Color*) data.GetUnsafePtr();
-                var dataArr = new Linear2DArrayAccessor<Color>(dataPtr, 16, 16);
+                var dataArr = new FlatArray2U<Color>(dataPtr, 16, 16);
                 for (var x = 0; x < 16; x++)
                 {
                     for (var y = 0; y < 16; y++)
