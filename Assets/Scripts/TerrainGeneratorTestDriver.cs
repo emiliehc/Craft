@@ -9,15 +9,23 @@ namespace dev.hongjun.mc
         {
             var terrainGenerator = new TerrainGenerator();
 
+            var m = new Map();
+
             for (var y = 0; y <= 3; y++)
             {
                 for (var x = -y; x <= y; x++)
                 {
                     for (var z = -y; z <= y; z++)
                     {
-                        await terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
+                        //await terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
+                        m[x, 10 - y, z] = new Voxel(new(x, 10 - y, z), Math.Abs(x * y + 100).Mod(6));
                     }
                 }
+            }
+            
+            foreach (var v in m.voxels)
+            {
+                await terrainGenerator.AddVoxel(v);
             }
 
             var obj = new GameObject

@@ -8,8 +8,8 @@ namespace dev.hongjun.mc
 {
     public class Chunk
     {
-        private const int X_SIZE = 16, Y_SIZE = 128, Z_SIZE = 16;
-        public int3 chunkId { get; }
+        public const int X_SIZE = 16, Y_SIZE = 128, Z_SIZE = 16;
+        public int2 chunkId { get; }
         private readonly int3 chunkPosition;
         private HashSet<int3> filledVoxels = new();
         private readonly FlatArray3M<Voxel?> allVoxels = new(X_SIZE, Y_SIZE, Z_SIZE);
@@ -20,15 +20,15 @@ namespace dev.hongjun.mc
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public ref Voxel? this[int x, int y, int z] => ref allVoxels[x, y, z];
+        public ref Voxel? this[int x, int y, int z] => ref allVoxels[new int3(x, y, z) - chunkPosition];
 
-        public Chunk(int3 id)
+        public Chunk(int2 id)
         {
             chunkId = id;
-            chunkPosition = new(chunkId.x * X_SIZE, chunkId.y * Y_SIZE, chunkId.z * Z_SIZE);
+            chunkPosition = new(chunkId.x * X_SIZE, 0, chunkId.y * Z_SIZE);
         }
 
-        public Voxel[] voxels => allVoxels.Where(v => v.HasValue).Select(v => v.Value).ToArray();
+        public IEnumerable<Voxel> voxels => allVoxels.Where(v => v.HasValue).Select(v => v.Value).ToArray();
 
         public bool IsInsideRelative(int3 relativePosition)
         {

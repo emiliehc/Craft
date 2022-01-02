@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+using System.Linq;
+using Unity.Mathematics;
+using static Unity.Mathematics.math;
+
+namespace dev.hongjun.mc
+{
+    public class Map
+    {
+        private readonly Dictionary<int2, Chunk> chunks = new();
+
+        public ref Voxel? this[int x, int y, int z] => ref GetChunkByPosition(new(x, y, z))[x, y, z];
+
+        public IEnumerable<Voxel> voxels => chunks.Select(kv => kv.Value)
+            .Select(c => c.voxels)
+            .SelectMany(v => v);
+
+        private Chunk GetChunkByPosition(int3 pos)
+        {
+            var id = PositionToChunkId(pos);
+            if (!chunks.ContainsKey(id))
+            {
+                chunks[id] = new(id);
+            }
+
+            return chunks[id];
+        }
+
+        private static int2 PositionToChunkId(int3 pos)
+        {
+            return new((pos.x - pos.x.Mod(Chunk.X_SIZE)) / Chunk.X_SIZE, (pos.z - pos.z.Mod(Chunk.Z_SIZE)) / Chunk.Z_SIZE);
+        }
+    }
+}

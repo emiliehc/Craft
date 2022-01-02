@@ -7,6 +7,7 @@ using static Unity.Mathematics.math;
 using System.Text;
 using JetBrains.Annotations;
 using Mono.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace dev.hongjun.mc
@@ -150,6 +151,7 @@ namespace dev.hongjun.mc
         }
 
         #endregion
+
         #region Texture
 
         public static Texture2D ResizeTo(this Texture2D texture2D, int targetX, int targetY,
@@ -168,8 +170,16 @@ namespace dev.hongjun.mc
             result.Apply();
             return result;
         }
-        
+
         #endregion
+    }
+
+    public static class MathExt
+    {
+        public static int Mod(this int x, int m)
+        {
+            return (x % m + m) % m;
+        }
     }
 
     public interface IFlattenable<out T>
@@ -194,6 +204,7 @@ namespace dev.hongjun.mc
         }
 
         public ref T this[int x, int y] => ref data[y * l0 + x];
+
         public IEnumerator<T> GetEnumerator()
         {
             for (var y = 0; y < l1; y++)
@@ -214,7 +225,7 @@ namespace dev.hongjun.mc
     public class FlatArray3M<T> : ICollection<T>, IFlattenable<T>
     {
         private T[,,] data;
-        
+
         public int l0 { get; }
         public int l1 { get; }
         public int l2 { get; }
@@ -229,7 +240,8 @@ namespace dev.hongjun.mc
         }
 
         public ref T this[int x, int y, int z] => ref data[x, y, z];
-        
+        public ref T this[int3 index] => ref this[index.x, index.y, index.z];
+
         public IEnumerator<T> GetEnumerator()
         {
             for (var z = 0; z < l2; z++)
@@ -278,7 +290,7 @@ namespace dev.hongjun.mc
         public int Count => l0 * l1 * l2;
 
         public bool IsReadOnly => false;
-        
+
         public T[] Flatten()
         {
             return this.ToArray();
