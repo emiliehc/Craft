@@ -163,9 +163,9 @@ namespace dev.hongjun.mc
             Graphics.Blit(texture2D, rt);
             var result = new Texture2D(targetX, targetY, format ?? texture2D.format, false)
             {
-                filterMode = FilterMode.Point
+                filterMode = FilterMode.Point,
+                name = texture2D.name
             };
-            result.name = texture2D.name;
             result.ReadPixels(new(0, 0, targetX, targetY), 0, 0);
             result.Apply();
             return result;
