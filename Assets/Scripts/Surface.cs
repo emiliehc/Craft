@@ -68,6 +68,16 @@ namespace dev.hongjun.mc
             }
         };
 
+        private static readonly int3[] directions =
+        {
+            (int3) left(),
+            (int3) right(),
+            (int3) down(),
+            (int3) up(),
+            (int3) back(),
+            (int3) forward(),
+        };
+
         public static float4[] GetUnitVertices(this CubeFace face)
         {
             return cube[(int) face];
@@ -76,6 +86,11 @@ namespace dev.hongjun.mc
         public static CubeFace Opposite(this CubeFace face)
         {
             return (byte) face % 2 == 0 ? face + 1 : face - 1;
+        }
+
+        public static int3 GetDirectionalVector(this CubeFace face)
+        {
+            return directions[(int) face];
         }
     }
 

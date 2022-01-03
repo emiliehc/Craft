@@ -14,7 +14,7 @@ namespace dev.hongjun.mc
 
     public static class LightLevelExt
     {
-        private static Parameters parameters = Parameters.Instance;
+        private static readonly Parameters parameters = Parameters.Instance;
         
         public static float LightLevelAsFloat(this byte b)
         {

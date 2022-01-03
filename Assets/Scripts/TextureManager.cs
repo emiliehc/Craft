@@ -6,6 +6,10 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace dev.hongjun.mc
 {
     public enum SurfaceTexture : ushort
@@ -31,10 +35,15 @@ namespace dev.hongjun.mc
         private Dictionary<SurfaceTexture, float2[]> surTexToUv;
         private Dictionary<SurfaceTexture, Texture2D> surfTexToTex;
         public Texture2D masterTexture { get; private set; }
+        
+#if UNITY_EDITOR
+        private int textureCount;
+        [HideInInspector]
+        public bool masterTexDebugObjShown = false;
+#endif
 
         private unsafe void Awake()
         {
-            
             surTexToUv = new();
             surfTexToTex = new();
             var textures = Resources.LoadAll("Textures", typeof(Texture2D))
@@ -90,11 +99,10 @@ namespace dev.hongjun.mc
                 };
                 surfTexToTex[surfaceTex] = t;
             }
-
-            // var debugObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            // debugObj.name = "Master Texture Debug";
-            // debugObj.GetComponent<Renderer>().material.mainTexture = masterTexture;
-            // debugObj.transform.localScale = new(textures.Count, 1.0f, 1.0f);
+            
+#if UNITY_EDITOR
+            textureCount = texCount;
+#endif
         }
 
         public float2[] GetUv(SurfaceTexture tex)
@@ -106,5 +114,35 @@ namespace dev.hongjun.mc
         {
             return surfTexToTex[tex];
         }
+
+#if UNITY_EDITOR
+        public void GenerateMasterTextureDebugObject()
+        {
+            var debugObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            debugObj.name = "Master Texture Debug";
+            debugObj.GetComponent<Renderer>().material.mainTexture = masterTexture;
+            debugObj.transform.localScale = new(textureCount, 1.0f, 1.0f);
+        }
+#endif
     }
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(TextureManager))]
+    public class TextureManagerEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (!TextureManager.Instance.masterTexDebugObjShown &&
+                GUI.Button(GUILayoutUtility.GetLastRect(), "Show Master Texture Debug Object"))
+            {
+                TextureManager.Instance.masterTexDebugObjShown = true;
+                TextureManager.Instance.GenerateMasterTextureDebugObject();
+            }
+        }
+    }
+
+#endif
 }
