@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Unity.Collections;
 using UnityEngine;
 using static Unity.Mathematics.math;
 using Unity.Mathematics;
+using UnityEngine.Rendering;
 
 namespace dev.hongjun.mc
 {
@@ -73,35 +76,60 @@ namespace dev.hongjun.mc
             }
         }
 
+        [StructLayout(LayoutKind.Explicit, Size = 6 * sizeof(float))]
+        private struct Vertex
+        {
+            [FieldOffset(0)]
+            public float4 position;
+
+            [FieldOffset(sizeof(float) * 4)] 
+            public float2 uv;
+        }
+
         public Mesh GenerateMesh()
         {
-            List<Vector3> vertices = new();
-            List<int> triangles = new();
-            List<Vector2> uv = new();
+            var vertexCount = surfaces.Count * 4;
             
+            List<int> triangles = new(surfaces.Count * 6);
+
+            var vertexBuffer = new List<Vertex>(surfaces.Count * 4);
             {
                 var indexOffset = 0;
 
                 foreach (var surface in surfaces.Select(posSurface => posSurface.Value))
                 {
-                    vertices.AddRange(surface.face.GetUnitVertices()
-                        .Select(vertex => (Vector3) (float3) surface.position + vertex));
-                    uv.AddRange(surface.texture.GetUv());
+                    var basePositions = surface.face.GetUnitVertices();
+                    var posOffset = surface.position.ToPoint();
+                    var surfaceUv = surface.texture.GetUv();
+                    for (var i = 0; i < 4; i++)
+                    {
+                        vertexBuffer.Add(new()
+                        {
+                            position = posOffset + basePositions[i],
+                            uv = surfaceUv[i],
+                        });
+                    }
+
                     triangles.AddRange(faceTriangles.Select(index => index + indexOffset));
                     indexOffset += 4;
                 }
             }
-            
-            var mesh = new Mesh
-            {
-                vertices = vertices.ToArray(),
-                triangles = triangles.ToArray(),
-                uv = uv.ToArray(),
-            };
 
+            var mesh = new Mesh();
+            var layout = new[]
+            {
+                new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 4),
+                new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+            };
+            
+            mesh.SetVertexBufferParams(vertexCount, layout);
+
+            mesh.SetVertexBufferData(vertexBuffer, 0, 0, vertexCount);
+            mesh.SetIndices(triangles, MeshTopology.Triangles, 0);
+            
             mesh.Optimize();
-            mesh.RecalculateNormals();
             mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
             mesh.RecalculateTangents();
 
             return mesh;

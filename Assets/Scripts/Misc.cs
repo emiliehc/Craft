@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using static Unity.Mathematics.math;
 using System.Text;
 using JetBrains.Annotations;
@@ -180,6 +181,12 @@ namespace dev.hongjun.mc
         public static int Mod(this int x, int m)
         {
             return (x % m + m) % m;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4 ToPoint(this int3 v)
+        {
+            return new(v.x, v.y, v.z, 1.0f);
         }
     }
 

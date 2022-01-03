@@ -16,59 +16,59 @@ namespace dev.hongjun.mc
 
     public static class CubeSurfaceExt
     {
-        private static readonly Vector3[][] cube =
+        private static readonly float4[][] cube =
         {
             // -x (left)
-            new Vector3[]
+            new float4[]
             {
-                new(-0.5f, -0.5f, 0.5f),
-                new(-0.5f, 0.5f, 0.5f),
-                new(-0.5f, 0.5f, -0.5f),
-                new(-0.5f, -0.5f, -0.5f),
+                new(-0.5f, -0.5f, 0.5f, 1.0f),
+                new(-0.5f, 0.5f, 0.5f, 1.0f),
+                new(-0.5f, 0.5f, -0.5f, 1.0f),
+                new(-0.5f, -0.5f, -0.5f, 1.0f),
             },
             // +x (right)
-            new Vector3[]
+            new float4[]
             {
-                new(0.5f, -0.5f, -0.5f),
-                new(0.5f, 0.5f, -0.5f),
-                new(0.5f, 0.5f, 0.5f),
-                new(0.5f, -0.5f, 0.5f),
+                new(0.5f, -0.5f, -0.5f, 1.0f),
+                new(0.5f, 0.5f, -0.5f, 1.0f),
+                new(0.5f, 0.5f, 0.5f, 1.0f),
+                new(0.5f, -0.5f, 0.5f, 1.0f),
             },
             // -y (bottom)
-            new Vector3[]
+            new float4[]
             {
-                new(-0.5f, -0.5f, 0.5f),
-                new(-0.5f, -0.5f, -0.5f),
-                new(0.5f, -0.5f, -0.5f),
-                new(0.5f, -0.5f, 0.5f),
+                new(-0.5f, -0.5f, 0.5f, 1.0f),
+                new(-0.5f, -0.5f, -0.5f, 1.0f),
+                new(0.5f, -0.5f, -0.5f, 1.0f),
+                new(0.5f, -0.5f, 0.5f, 1.0f),
             },
             // +y (top)
-            new Vector3[]
+            new float4[]
             {
-                new(0.5f, 0.5f, 0.5f),
-                new(0.5f, 0.5f, -0.5f),
-                new(-0.5f, 0.5f, -0.5f),
-                new(-0.5f, 0.5f, 0.5f),
+                new(0.5f, 0.5f, 0.5f, 1.0f),
+                new(0.5f, 0.5f, -0.5f, 1.0f),
+                new(-0.5f, 0.5f, -0.5f, 1.0f),
+                new(-0.5f, 0.5f, 0.5f, 1.0f),
             },
             // -z (back)
-            new Vector3[]
+            new float4[]
             {
-                new(-0.5f, -0.5f, -0.5f),
-                new(-0.5f, 0.5f, -0.5f),
-                new(0.5f, 0.5f, -0.5f),
-                new(0.5f, -0.5f, -0.5f),
+                new(-0.5f, -0.5f, -0.5f, 1.0f),
+                new(-0.5f, 0.5f, -0.5f, 1.0f),
+                new(0.5f, 0.5f, -0.5f, 1.0f),
+                new(0.5f, -0.5f, -0.5f, 1.0f),
             },
             // +z (front)
-            new Vector3[]
+            new float4[]
             {
-                new(0.5f, -0.5f, 0.5f),
-                new(0.5f, 0.5f, 0.5f),
-                new(-0.5f, 0.5f, 0.5f),
-                new(-0.5f, -0.5f, 0.5f),
+                new(0.5f, -0.5f, 0.5f, 1.0f),
+                new(0.5f, 0.5f, 0.5f, 1.0f),
+                new(-0.5f, 0.5f, 0.5f, 1.0f),
+                new(-0.5f, -0.5f, 0.5f, 1.0f),
             }
         };
 
-        public static Vector3[] GetUnitVertices(this CubeFace face)
+        public static float4[] GetUnitVertices(this CubeFace face)
         {
             return cube[(int) face];
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -19,7 +20,7 @@ namespace dev.hongjun.mc
 
     public static class SurfaceTextureExt
     {
-        public static Vector2[] GetUv(this SurfaceTexture texture)
+        public static float2[] GetUv(this SurfaceTexture texture)
         {
             return TextureManager.Instance.GetUv(texture);
         }
@@ -27,7 +28,7 @@ namespace dev.hongjun.mc
 
     public class TextureManager : Singleton<TextureManager>
     {
-        private Dictionary<SurfaceTexture, Vector2[]> surTexToUv;
+        private Dictionary<SurfaceTexture, float2[]> surTexToUv;
         private Dictionary<SurfaceTexture, Texture2D> surfTexToTex;
         public Texture2D masterTexture { get; private set; }
 
@@ -82,10 +83,10 @@ namespace dev.hongjun.mc
                 var offset = singleTexWidth * i;
                 surTexToUv[surfaceTex] = new[]
                 {
-                    new Vector2(offset + 0.0f, 0.0f),
-                    new Vector2(offset + 0.0f, 1.0f),
-                    new Vector2(offset + singleTexWidth, 1.0f),
-                    new Vector2(offset + singleTexWidth, 0.0f),
+                    new float2(offset + 0.0f, 0.0f),
+                    new float2(offset + 0.0f, 1.0f),
+                    new float2(offset + singleTexWidth, 1.0f),
+                    new float2(offset + singleTexWidth, 0.0f),
                 };
                 // surTexToUv[surfaceTex] = new[]
                 // {
@@ -103,7 +104,7 @@ namespace dev.hongjun.mc
             // debugObj.transform.localScale = new(textures.Count, 1.0f, 1.0f);
         }
 
-        public Vector2[] GetUv(SurfaceTexture tex)
+        public float2[] GetUv(SurfaceTexture tex)
         {
             return surTexToUv[tex];
         }
