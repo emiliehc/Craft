@@ -37,15 +37,34 @@ namespace dev.hongjun.mc
         private readonly FlatArray3M<byte> lightLevel = new(X_SIZE, Y_SIZE, Z_SIZE); // 0 to 15
 
         /// <summary>
-        /// Absolute position access
+        /// Absolute position access to voxel data
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
         public Voxel? this[int x, int y, int z]
         {
-            get => allVoxels[new int3(x, y, z) - chunkPosition];
-            set => allVoxels[new int3(x, y, z) - chunkPosition] = value;
+            get => this[new(x, y, z)];
+            set => this[new(x, y, z)] = value;
+        }
+
+        /// <summary>
+        /// Absolute position access to voxel data
+        /// </summary>
+        public Voxel? this[int3 coords]
+        {
+            get => allVoxels[coords - chunkPosition];
+            set => allVoxels[coords - chunkPosition] = value;
+        }
+
+        public byte GetLightLevelAt(int3 coords)
+        {
+            return lightLevel[coords - chunkPosition];
+        }
+        
+        public void SetLightLevelAt(int3 coords, byte value)
+        {
+            lightLevel[coords - chunkPosition] = value;
         }
 
         public Chunk(int2 id)

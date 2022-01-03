@@ -14,6 +14,12 @@ namespace dev.hongjun.mc
             set => GetChunkByPosition(new (x, y, z))[x, y, z] = value;
         }
 
+        public Voxel? this[int3 coords]
+        {
+            get => GetChunkByPosition(coords)[coords];
+            set => GetChunkByPosition(coords)[coords] = value;
+        }
+
         public IEnumerable<Voxel> voxels => chunks.Select(kv => kv.Value)
             .Select(c => c.voxels)
             .SelectMany(v => v);
