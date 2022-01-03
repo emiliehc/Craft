@@ -44,8 +44,8 @@ namespace dev.hongjun.mc
             obj.GetComponent<Rigidbody>().isKinematic = true;
             obj.AddComponent<MeshCollider>();
             obj.GetComponent<MeshCollider>().sharedMesh = mesh;
-            var material = new Material(Resources.Load<Shader>("Shaders/ChunkShader"));
-            material.SetTexture("_MasterTexture", TextureManager.Instance.masterTexture);
+            var material = new Material(Resources.Load<Shader>("Shaders/LitChunkShader"));
+            material.SetTexture("_MainTex", TextureManager.Instance.masterTexture);
             obj.GetComponent<Renderer>().material = material;
         }
     }

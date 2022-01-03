@@ -7,6 +7,7 @@ using static Unity.Mathematics.math;
 using System.Text;
 using JetBrains.Annotations;
 using Mono.Collections.Generic;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
