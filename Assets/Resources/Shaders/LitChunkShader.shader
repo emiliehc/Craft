@@ -26,7 +26,7 @@ Shader "LitChunkShader"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
-                //float light : LIGHT;
+                float light : TEXCOORD1;
             };
 
             struct v2f
@@ -34,7 +34,7 @@ Shader "LitChunkShader"
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
-                //float light : LIGHT;
+                float light : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -46,15 +46,15 @@ Shader "LitChunkShader"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o, o.vertex);
-                //o.light = v.light;
+                o.light = v.light;
                 return o;
             }
 
             float4 frag(v2f i) : SV_Target
             {
                 // sample the texture
-                // fixed4 col = tex2D(_MainTex, i.uv) * i.light;
-                fixed4 col = tex2D(_MainTex, i.uv);
+                float4 col = tex2D(_MainTex, i.uv) * i.light;
+                // fixed4 col = tex2D(_MainTex, i.uv);
                 //float4 col = float4(1.0f, 1.0f, 1.0f, 1.0f);
                 //.x = i.uv.y;
                 // apply fog

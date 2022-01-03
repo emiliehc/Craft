@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Unity.Collections;
 using UnityEngine;
 using static Unity.Mathematics.math;
 using Unity.Mathematics;
@@ -76,7 +74,7 @@ namespace dev.hongjun.mc
             }
         }
 
-        [StructLayout(LayoutKind.Explicit, Size = 6 * sizeof(float))]
+        [StructLayout(LayoutKind.Explicit, Size = 7 * sizeof(float))]
         private struct Vertex
         {
             [FieldOffset(0)]
@@ -84,7 +82,11 @@ namespace dev.hongjun.mc
 
             [FieldOffset(sizeof(float) * 4)] 
             public float2 uv;
+
+            [FieldOffset(sizeof(float) * 6)] 
+            public float light;
         }
+
 
         public Mesh GenerateMesh()
         {
@@ -107,6 +109,7 @@ namespace dev.hongjun.mc
                         {
                             position = posOffset + basePositions[i],
                             uv = surfaceUv[i],
+                            light = 1.0f,
                         });
                     }
 
@@ -120,6 +123,7 @@ namespace dev.hongjun.mc
             {
                 new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 4),
                 new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
+                new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 1)
             };
             
             mesh.SetVertexBufferParams(vertexCount, layout);
