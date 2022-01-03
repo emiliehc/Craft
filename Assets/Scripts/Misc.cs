@@ -211,7 +211,11 @@ namespace dev.hongjun.mc
             this.l1 = l1;
         }
 
-        public ref T this[int x, int y] => ref data[y * l0 + x];
+        public T this[int x, int y]
+        {
+            get => data[y * l0 + x];
+            set => data[y * l0 + x] = value;
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -247,8 +251,17 @@ namespace dev.hongjun.mc
             data = new T[l0, l1, l2];
         }
 
-        public ref T this[int x, int y, int z] => ref data[x, y, z];
-        public ref T this[int3 index] => ref this[index.x, index.y, index.z];
+        public T this[int x, int y, int z] 
+        { 
+            get => data[x, y, z];
+            set => data[x, y, z] = value;
+        }
+
+        public T this[int3 index]
+        {
+            get => this[index.x, index.y, index.z];
+            set => this[index.x, index.y, index.z] = value;
+        }
 
         public IEnumerator<T> GetEnumerator()
         {

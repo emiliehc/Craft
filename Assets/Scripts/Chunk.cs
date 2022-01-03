@@ -6,6 +6,27 @@ using static Unity.Mathematics.math;
 
 namespace dev.hongjun.mc
 {
+    public class Parameters : Singleton<Parameters>
+    {
+        public float minLightLevel = 0.3f;
+        public float maxLightLevel = 1.0f;
+    }
+
+    public static class LightLevelExt
+    {
+        private static Parameters parameters = Parameters.Instance;
+        
+        public static float LightLevelAsFloat(this byte b)
+        {
+            return parameters.minLightLevel + b / 15.0f * (parameters.maxLightLevel - parameters.minLightLevel);
+        }
+
+        public static byte LightLevelAsByte(this float f)
+        {
+            return (byte)((f - parameters.minLightLevel) / (parameters.maxLightLevel - parameters.minLightLevel) * 15.0f);
+        }
+    }
+
     public class Chunk
     {
         public const int X_SIZE = 16, Y_SIZE = 128, Z_SIZE = 16;
@@ -13,6 +34,7 @@ namespace dev.hongjun.mc
         private readonly int3 chunkPosition;
         private HashSet<int3> filledVoxels = new();
         private readonly FlatArray3M<Voxel?> allVoxels = new(X_SIZE, Y_SIZE, Z_SIZE);
+        private readonly FlatArray3M<byte> lightLevel = new(X_SIZE, Y_SIZE, Z_SIZE); // 0 to 15
 
         /// <summary>
         /// Absolute position access
@@ -20,7 +42,11 @@ namespace dev.hongjun.mc
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public ref Voxel? this[int x, int y, int z] => ref allVoxels[new int3(x, y, z) - chunkPosition];
+        public Voxel? this[int x, int y, int z]
+        {
+            get => allVoxels[new int3(x, y, z) - chunkPosition];
+            set => allVoxels[new int3(x, y, z) - chunkPosition] = value;
+        }
 
         public Chunk(int2 id)
         {

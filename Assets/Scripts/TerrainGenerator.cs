@@ -66,6 +66,7 @@ namespace dev.hongjun.mc
                         position = voxel.position, 
                         face = (CubeFace) i, 
                         texture = voxel.texId,
+                        light = 1.0f,
                     }));
 
                 newSurfaces.ForEach(surface => surfaces.Add((surface.position, surface.face), surface));
@@ -109,7 +110,7 @@ namespace dev.hongjun.mc
                         {
                             position = posOffset + basePositions[i],
                             uv = surfaceUv[i],
-                            light = 1.0f,
+                            light = surface.light,
                         });
                     }
 

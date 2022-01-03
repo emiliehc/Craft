@@ -9,7 +9,10 @@ namespace dev.hongjun.mc
     {
         private readonly Dictionary<int2, Chunk> chunks = new();
 
-        public ref Voxel? this[int x, int y, int z] => ref GetChunkByPosition(new(x, y, z))[x, y, z];
+        public Voxel? this[int x, int y, int z] {
+            get => GetChunkByPosition(new (x, y, z))[x, y, z]; 
+            set => GetChunkByPosition(new (x, y, z))[x, y, z] = value;
+        }
 
         public IEnumerable<Voxel> voxels => chunks.Select(kv => kv.Value)
             .Select(c => c.voxels)

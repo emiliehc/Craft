@@ -84,6 +84,6 @@ namespace dev.hongjun.mc
         public int3 position;
         public CubeFace face;
         public SurfaceTexture texture;
-        
+        public float light;
     }
 }

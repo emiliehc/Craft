@@ -88,13 +88,6 @@ namespace dev.hongjun.mc
                     new float2(offset + singleTexWidth, 1.0f),
                     new float2(offset + singleTexWidth, 0.0f),
                 };
-                // surTexToUv[surfaceTex] = new[]
-                // {
-                //     new Vector2(0.0f, 0.0f),
-                //     new Vector2(0.0f, 1.0f),
-                //     new Vector2(1.0f, 1.0f),
-                //     new Vector2(1.0f, 0.0f),
-                // };
                 surfTexToTex[surfaceTex] = t;
             }
 
