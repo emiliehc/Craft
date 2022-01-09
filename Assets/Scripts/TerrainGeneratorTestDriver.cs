@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 
 namespace dev.hongjun.mc
@@ -10,43 +14,62 @@ namespace dev.hongjun.mc
             var terrainGenerator = new TerrainGenerator();
 
             var m = new Map();
+            //
+            // for (var y = 0; y <= 3; y++)
+            // {
+            //     for (var x = -y; x <= y; x++)
+            //     {
+            //         for (var z = -y; z <= y; z++)
+            //         {
+            //             //await terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
+            //             m[x, 10 - y, z] = new Voxel(new(x, 10 - y, z), Math.Abs(x * y + 100).Mod(6));
+            //         }
+            //     }
+            // }
+            
+            print("Starting terrain generation");
 
-            for (var y = 0; y <= 3; y++)
+            const int size = 100;
+            for (var z = -size; z < size; z++)
             {
-                for (var x = -y; x <= y; x++)
+                for (var x = -size; x < size; x++)
                 {
-                    for (var z = -y; z <= y; z++)
+                    var height = (int) (Mathf.PerlinNoise(x / 30.0f, z / 30.0f) * 20.0f + 2.0f);
+                    for (var y = 0; y < height; y++)
                     {
-                        //await terrainGenerator.AddVoxel(new(new(x, -y, z), Math.Abs(x * y + 100) % 6));
-                        m[x, 10 - y, z] = new Voxel(new(x, 10 - y, z), Math.Abs(x * y + 100).Mod(6));
+                        m[x, y, z] = new Voxel(new(x, y, z), SurfaceTexture.DIRT);
                     }
+                    
+                    m[x, height, z] = new Voxel(new(x, height, z), SurfaceTexture.GRASS);
                 }
             }
-            
-            foreach (var v in m.voxels)
+
+            print("Starting mesh generation");
+
+            var tasks = new List<Task>();
+            var gens = new List<TerrainGenerator>();
+            foreach (var chunk in m.allChunks)
             {
-                await terrainGenerator.AddVoxel(v);
+                var gen = new TerrainGenerator();
+                gens.Add(gen);
+                tasks.Add(Task.Run(async () =>
+                {
+                    foreach (var voxel in chunk.voxels)
+                    {
+                        await gen.AddVoxel(voxel);
+                    }
+                }));
             }
 
-            var obj = new GameObject
+            Task.WaitAll(tasks.ToArray());
+            foreach (var gen in gens)
             {
-                name = "Beacon"
-            };
+                gen.GenerateMesh().AddToScene(GUID.Generate().ToString());
+            }
+            
+            print("Mesh generation ends");
 
-            var mesh = terrainGenerator.GenerateMesh();
-            mesh.name = Guid.NewGuid().ToString();
-
-            obj.AddComponent<MeshFilter>();
-            obj.GetComponent<MeshFilter>().mesh = mesh;
-            obj.AddComponent<MeshRenderer>();
-            obj.AddComponent<Rigidbody>();
-            obj.GetComponent<Rigidbody>().useGravity = false;
-            obj.GetComponent<Rigidbody>().isKinematic = true;
-            obj.AddComponent<MeshCollider>();
-            obj.GetComponent<MeshCollider>().sharedMesh = mesh;
-            var material = new Material(Resources.Load<Shader>("Shaders/LitChunkShader"));
-            material.SetTexture("_MainTex", TextureManager.Instance.masterTexture);
-            obj.GetComponent<Renderer>().material = material;
+            
         }
     }
 }

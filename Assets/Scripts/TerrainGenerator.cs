@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -136,8 +137,33 @@ namespace dev.hongjun.mc
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
+            
+            mesh.name = Guid.NewGuid().ToString();
 
             return mesh;
+        }
+    }
+
+    public static class MeshExt
+    {
+        public static void AddToScene(this Mesh mesh, string name)
+        {
+            var obj = new GameObject
+            {
+                name = name,
+            };
+            
+            obj.AddComponent<MeshFilter>();
+            obj.GetComponent<MeshFilter>().mesh = mesh;
+            obj.AddComponent<MeshRenderer>();
+            obj.AddComponent<Rigidbody>();
+            obj.GetComponent<Rigidbody>().useGravity = false;
+            obj.GetComponent<Rigidbody>().isKinematic = true;
+            obj.AddComponent<MeshCollider>();
+            obj.GetComponent<MeshCollider>().sharedMesh = mesh;
+            var material = new Material(Resources.Load<Shader>("Shaders/LitChunkShader"));
+            material.SetTexture("_MainTex", TextureManager.Instance.masterTexture);
+            obj.GetComponent<Renderer>().material = material;
         }
     }
 }

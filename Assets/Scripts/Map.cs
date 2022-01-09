@@ -24,6 +24,8 @@ namespace dev.hongjun.mc
             .Select(c => c.voxels)
             .SelectMany(v => v);
 
+        public IEnumerable<Chunk> allChunks => chunks.Select(kv => kv.Value);
+
         private Chunk GetChunkByPosition(int3 pos)
         {
             var id = PositionToChunkId(pos);
