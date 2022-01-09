@@ -29,18 +29,27 @@ namespace dev.hongjun.mc
             
             print("Starting terrain generation");
 
-            const int size = 100;
+            const int size = 200;
             for (var z = -size; z < size; z++)
             {
                 for (var x = -size; x < size; x++)
                 {
                     var height = (int) (Mathf.PerlinNoise(x / 30.0f, z / 30.0f) * 20.0f + 2.0f);
-                    for (var y = 0; y < height; y++)
+                    
+                    for (var y = 0; y < Mathf.Min(height, 10); y++)
+                    {
+                        m[x, y, z] = new Voxel(new(x, y, z), SurfaceTexture.STONE);
+                    }
+                    
+                    for (var y = 10; y < height - 1; y++)
                     {
                         m[x, y, z] = new Voxel(new(x, y, z), SurfaceTexture.DIRT);
                     }
-                    
-                    m[x, height, z] = new Voxel(new(x, height, z), SurfaceTexture.GRASS);
+
+                    if (height > 10)
+                    {
+                        m[x, height - 1, z] = new Voxel(new(x, height - 1, z), SurfaceTexture.GRASS);
+                    }
                 }
             }
 
