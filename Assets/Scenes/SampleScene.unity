@@ -588,7 +588,7 @@ MonoBehaviour:
   cameraSubObject: {fileID: 963194225}
   lookSensitivity: 50
   movementSpeed: 10
-  gravity: -1.31
+  gravity: -9.8
   playerHeight: 0.2
   isGrounded: 0
   groundLayer:

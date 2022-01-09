@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
 using hongjun.dev.mc;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Unity.Mathematics.math;
+using Unity.Mathematics;
 
 namespace dev.hongjun.mc
 {
@@ -9,7 +13,7 @@ namespace dev.hongjun.mc
         public GameObject cameraSubObject;
         private InputActions inputActions;
         private CharacterController charController;
-        
+
         public float lookSensitivity = 50f;
 
         private float pitch = 0f;
@@ -20,8 +24,9 @@ namespace dev.hongjun.mc
         // movement code
         public float movementSpeed = 10f;
 
+        [SerializeField]
         //Velocity
-        private Vector3 velocity;
+        private float3 velocity;
 
         //Gravity
         public float gravity = -9.8f;
@@ -30,6 +35,9 @@ namespace dev.hongjun.mc
         public LayerMask groundLayer;
 
         public float jumpHeight = 1.5f;
+
+        [SerializeField]
+        private readonly Queue<Action> queue = new();
 
         private void OnGUI()
         {
@@ -40,12 +48,18 @@ namespace dev.hongjun.mc
 
         private void OnJump()
         {
-            var moveDelta = inputActions.Player.Movement.ReadValue<Vector2>();
-            Debug.Log("Jumping!");
-            if (moveDelta.magnitude == 0) return;
-            var trans = transform;
-            var translationDelta = (trans.right * moveDelta.x) + (trans.forward * moveDelta.y);
-            //charController.Move(translationDelta * 60f * movementSpeed * Time.deltaTime);
+            // var moveDelta = inputActions.Player.Movement.ReadValue<Vector2>();
+            // Debug.Log("Jumping!");
+            
+            queue.Enqueue(() =>
+            {
+                velocity.y += sqrt(jumpHeight * -1f * gravity);
+            });
+
+            // if (IsOnGround())
+            // {
+                
+            // }
         }
 
         private static void OnShoot()
@@ -58,6 +72,8 @@ namespace dev.hongjun.mc
         {
             inputActions ??= new InputActions();
             inputActions.Enable();
+
+            inputActions.Player.Jump.performed += _ => OnJump();
         }
 
         // Start is called before the first frame update
@@ -78,6 +94,7 @@ namespace dev.hongjun.mc
             var lookDelta = inputActions.Player.Look.ReadValue<Vector2>();
             //if there is any new look
             //Debug.Log(transform.position);
+            
             if (lookDelta.magnitude != 0)
             {
                 lookDelta *= lookSensitivity * Time.deltaTime;
@@ -85,7 +102,7 @@ namespace dev.hongjun.mc
                 pitch -= lookDelta.y;
                 yaw += lookDelta.x;
 
-                pitch = Mathf.Clamp(pitch, -89f, 89f);
+                pitch = clamp(pitch, -89f, 89f);
 
                 cameraSubObject.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
                 transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
@@ -102,23 +119,31 @@ namespace dev.hongjun.mc
                 charController.Move(translationDelta * movementSpeed * Time.deltaTime);
             }
 
+            {
+                while (queue.TryDequeue(out var action))
+                {
+                    action.Invoke();
+                }
+            }
 
             //increment downwards vel
-            velocity.y += 2.5f * gravity * Time.deltaTime;
+            velocity.y += gravity * Time.deltaTime;
             // if exists obj within sphere around us, is part of ground layer mask
             //reset down vel to 0
             isGrounded = IsOnGround();
+        
             if (isGrounded && velocity.y < 0)
             {
                 velocity.y = 0f;
             }
 
-            charController.Move(velocity * Time.deltaTime);
+            charController.Move(motion: velocity * Time.deltaTime);
         }
 
         private bool IsOnGround()
         {
-            return Physics.Raycast(transform.position, Vector3.down, 0.01f);
+            // Debug.DrawRay(transform.position, down(), Color.magenta);
+            return Physics.Raycast(transform.position, down(), 1.1f);
         }
 
         private void OnTriggerEnter(Collider other)

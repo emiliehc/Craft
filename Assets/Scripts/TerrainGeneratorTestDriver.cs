@@ -29,7 +29,7 @@ namespace dev.hongjun.mc
             
             print("Starting terrain generation");
 
-            const int size = 200;
+            const int size = 50;
             for (var z = -size; z < size; z++)
             {
                 for (var x = -size; x < size; x++)
