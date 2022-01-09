@@ -37,9 +37,9 @@ namespace dev.hongjun.mc
         {
             await Task.Yield();
             voxels.Add(voxel);
-            
+
             List<Surface> newSurfaces = new();
-            
+
             {
                 var pos = voxel.position;
 
@@ -56,16 +56,16 @@ namespace dev.hongjun.mc
                     {
                         surfaceIndices.Remove(i);
                     }
-                        
+
                     // remove existing surface
                     surfaces.Remove((adjacentPos, ((CubeFace) i).Opposite()));
                 }
-                
+
                 newSurfaces.AddRange(surfaceIndices
                     .Select(i => new Surface
                     {
-                        position = voxel.position, 
-                        face = (CubeFace) i, 
+                        position = voxel.position,
+                        face = (CubeFace) i,
                         texture = voxel.texId,
                         light = 1.0f,
                     }));
@@ -76,24 +76,28 @@ namespace dev.hongjun.mc
             }
         }
 
+#if CUSTOM_SHADER
         [StructLayout(LayoutKind.Explicit, Size = 7 * sizeof(float))]
+#else
+        [StructLayout(LayoutKind.Explicit, Size = 6 * sizeof(float))]
+#endif
         private struct Vertex
         {
-            [FieldOffset(0)]
-            public float4 position;
+            [FieldOffset(0)] public float4 position;
 
-            [FieldOffset(sizeof(float) * 4)] 
-            public float2 uv;
+            [FieldOffset(sizeof(float) * 4)] public float2 uv;
 
+#if CUSTOM_SHADER
             [FieldOffset(sizeof(float) * 6)] 
             public float light;
+#endif
         }
 
 
         public Mesh GenerateMesh()
         {
             var vertexCount = surfaces.Count * 4;
-            
+
             List<int> triangles = new(surfaces.Count * 6);
 
             var vertexBuffer = new List<Vertex>(surfaces.Count * 4);
@@ -111,7 +115,7 @@ namespace dev.hongjun.mc
                         {
                             position = posOffset + basePositions[i],
                             uv = surfaceUv[i],
-                            light = surface.light,
+                            //light = surface.light,
                         });
                     }
 
@@ -125,19 +129,21 @@ namespace dev.hongjun.mc
             {
                 new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 4),
                 new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.Float32, 2),
-                new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 1)
+#if CUSTOM_SHADER
+                new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 1),
+#endif
             };
-            
+
             mesh.SetVertexBufferParams(vertexCount, layout);
 
             mesh.SetVertexBufferData(vertexBuffer, 0, 0, vertexCount);
             mesh.SetIndices(triangles, MeshTopology.Triangles, 0);
-            
+
             mesh.Optimize();
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
-            
+
             mesh.name = Guid.NewGuid().ToString();
 
             return mesh;
@@ -152,7 +158,7 @@ namespace dev.hongjun.mc
             {
                 name = name,
             };
-            
+
             obj.AddComponent<MeshFilter>();
             obj.GetComponent<MeshFilter>().mesh = mesh;
             obj.AddComponent<MeshRenderer>();
@@ -161,7 +167,12 @@ namespace dev.hongjun.mc
             obj.GetComponent<Rigidbody>().isKinematic = true;
             obj.AddComponent<MeshCollider>();
             obj.GetComponent<MeshCollider>().sharedMesh = mesh;
+#if CUSTOM_SHADER
             var material = new Material(Resources.Load<Shader>("Shaders/LitChunkShader"));
+#else
+            var material = new Material(Resources.Load<Shader>("Shaders/Lit"));
+#endif
+            
             material.SetTexture("_MainTex", TextureManager.Instance.masterTexture);
             obj.GetComponent<Renderer>().material = material;
         }
