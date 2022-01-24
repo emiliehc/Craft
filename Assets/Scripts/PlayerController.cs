@@ -79,6 +79,8 @@ namespace dev.hongjun.mc
         // Start is called before the first frame update
         private void Start()
         {
+            var mng = SerializationManager.Instance;
+            
             Cursor.lockState = CursorLockMode.Locked;
             charController = GetComponent<CharacterController>();
             if (charController == null)
