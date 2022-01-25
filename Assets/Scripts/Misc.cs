@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Unity.Mathematics.math;
 using System.Text;
 using JetBrains.Annotations;
@@ -188,6 +189,18 @@ namespace dev.hongjun.mc
         {
             return new(v.x, v.y, v.z, 1.0f);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte GetLowNibble(this byte input)
+        {
+            return (byte) (input & 0x0F);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte GetHighNibble(this byte input)
+        {
+            return (byte) (input & 0xF0);
+        }
     }
 
     public interface IFlattenable<out T>
@@ -251,8 +264,8 @@ namespace dev.hongjun.mc
             data = new T[l0, l1, l2];
         }
 
-        public T this[int x, int y, int z] 
-        { 
+        public T this[int x, int y, int z]
+        {
             get => data[x, y, z];
             set => data[x, y, z] = value;
         }
@@ -315,6 +328,36 @@ namespace dev.hongjun.mc
         public T[] Flatten()
         {
             return this.ToArray();
+        }
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = sizeof(ushort))]
+    public struct RelativeCoordinates
+    {
+        [FieldOffset(0)] public byte y;
+        [FieldOffset(1)] private byte xz;
+
+        public byte x
+        {
+            get => xz.GetLowNibble();
+            set => xz = (byte) (xz & 0x0F + value);
+        }
+
+        public byte z
+        {
+            get => xz.GetHighNibble();
+            set => xz = (byte) (xz & 0xF0 + value << 4);
+        }
+
+        public RelativeCoordinates(byte x, byte y, byte z)
+        {
+            this.y = y;
+            xz = (byte) (((z << 4) & 0xF0) | (x & 0xF0));
+        }
+
+        public static unsafe explicit operator ushort(RelativeCoordinates coords)
+        {
+            return *(ushort*) &coords;
         }
     }
 }

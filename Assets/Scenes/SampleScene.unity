@@ -434,6 +434,9 @@ GameObject:
   - component: {fileID: 1252066382}
   - component: {fileID: 1252066381}
   - component: {fileID: 1252066383}
+  - component: {fileID: 1252066384}
+  - component: {fileID: 1252066386}
+  - component: {fileID: 1252066385}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -588,6 +591,10 @@ MonoBehaviour:
   cameraSubObject: {fileID: 963194225}
   lookSensitivity: 50
   movementSpeed: 10
+  velocity:
+    x: 0
+    y: 0
+    z: 0
   gravity: -9.8
   playerHeight: 0.2
   isGrounded: 0
@@ -698,3 +705,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1252066384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252066372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e1a43e71e14415a9aef79d6a6f3b69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1252066385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252066372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c8bb6fdb30794e59b9e998d55f56afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  publicField: {x: 0, y: 0, z: 0}
+--- !u!114 &1252066386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252066372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c8bb6fdb30794e59b9e998d55f56afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  publicField: {x: 0, y: 0, z: 0}

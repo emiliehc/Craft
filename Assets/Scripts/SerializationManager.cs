@@ -9,7 +9,6 @@ namespace dev.hongjun.mc
     [AttributeUsage(AttributeTargets.Class)]
     public class SerializeMonoBehaviourAttribute : Attribute
     {
-        
     }
 
     [AttributeUsage(AttributeTargets.Field)]
@@ -18,47 +17,46 @@ namespace dev.hongjun.mc
         public bool ByReference = true;
     }
 
-    [SerializeMonoBehaviour]
-    public class TestClass : MonoBehaviour
-    {
-        [SerializeMonoBehaviourField]
-        private int privateField;
-
-        [SerializeMonoBehaviourField] 
-        public Vector3 publicField;
-    }
-
     public class Snapshot
     {
         public struct Transform
         {
             public Vector3 position;
-            public Vector3 scale;
+            public Vector3 localScale;
             public Quaternion rotation;
         }
 
         public class ObjectSnapshot
         {
-            private readonly Dictionary<Type, List<(FieldInfo, object)>> snapshots;
+            private readonly Dictionary<Type, List<(FieldInfo, object)>> fieldSnapshots = new();
+            public Transform transform { get; set; }
 
             public void AddField(Type type, FieldInfo field, object value)
             {
-                if (!snapshots.ContainsKey(type))
-                    snapshots[type] = new();
-                
-                snapshots[type].Add((field, value));
+                if (!fieldSnapshots.ContainsKey(type))
+                    fieldSnapshots[type] = new();
+
+                fieldSnapshots[type].Add((field, value));
             }
         }
 
         private readonly Dictionary<int, ObjectSnapshot> snapshots = new();
+
+        public ObjectSnapshot this[GameObject obj]
+        {
+            get => snapshots[obj.GetInstanceID()];
+            set => snapshots[obj.GetInstanceID()] = value;
+        }
     }
-    
+
     public class SerializationManager : Singleton<SerializationManager>
     {
         private Dictionary<Type, List<FieldInfo>> toSerialize;
 
         private void Start()
         {
+            toSerialize = new();
+        
             // get all classes to serialize
             var serializableTypes = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -74,21 +72,43 @@ namespace dev.hongjun.mc
             {
                 toSerialize[key] = value;
             }
-            
         }
 
         public Snapshot TakeSnapshot()
         {
             Snapshot snapshot = new();
-            
-            var objects = GameObject.FindGameObjectsWithTag("Checkpoint");
+
+            var objects = GameObject.FindGameObjectsWithTag("Player");
             foreach (var obj in objects)
             {
-                var id = obj.GetInstanceID();
-                //obj.GetComponent<>()
+                var objTransform = obj.transform;
+                Snapshot.ObjectSnapshot objectSnapshot = new()
+                {
+                    transform = new()
+                    {
+                        position = objTransform.position,
+                        rotation = objTransform.rotation,
+                        localScale = objTransform.localScale
+                    }
+                };
+                foreach (var (type, fields) in toSerialize)
+                {
+                    var componentToSerialize = obj.GetComponent(type) as MonoBehaviour;
+                    if (componentToSerialize == null)
+                    {
+                        continue;
+                    }
+                    
+                    foreach (var field in fields)
+                    {
+                        objectSnapshot.AddField(type, field, field.GetValue(componentToSerialize));
+                    }
+                }
+                
+                snapshot[obj] = objectSnapshot;
             }
 
-            return null;
+            return snapshot;
         }
 
         /// <summary>
@@ -96,7 +116,6 @@ namespace dev.hongjun.mc
         /// </summary>
         public void RestoreSnapshot(Snapshot snapshot)
         {
-            
         }
     }
 }
