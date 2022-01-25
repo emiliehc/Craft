@@ -28,7 +28,7 @@ namespace dev.hongjun.mc
 
         public class ObjectSnapshot
         {
-            private readonly Dictionary<Type, List<(FieldInfo, object)>> fieldSnapshots = new();
+            private readonly Dictionary<Type, Dictionary<FieldInfo, object>> fieldSnapshots = new();
             public Transform transform { get; set; }
 
             public void AddField(Type type, FieldInfo field, object value)
@@ -36,8 +36,14 @@ namespace dev.hongjun.mc
                 if (!fieldSnapshots.ContainsKey(type))
                     fieldSnapshots[type] = new();
 
-                fieldSnapshots[type].Add((field, value));
+                fieldSnapshots[type][field] = value;
             }
+
+            public bool HasField(Type type, FieldInfo field)
+                => fieldSnapshots[type].ContainsKey(field);
+
+            public object GetField(Type type, FieldInfo field)
+                => fieldSnapshots[type][field];
         }
 
         private readonly Dictionary<int, ObjectSnapshot> snapshots = new();
@@ -56,7 +62,7 @@ namespace dev.hongjun.mc
         private void Start()
         {
             toSerialize = new();
-        
+
             // get all classes to serialize
             var serializableTypes = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -76,13 +82,13 @@ namespace dev.hongjun.mc
 
         public Snapshot TakeSnapshot()
         {
-            Snapshot snapshot = new();
+            var snapshot = new Snapshot();
 
             var objects = GameObject.FindGameObjectsWithTag("Player");
             foreach (var obj in objects)
             {
                 var objTransform = obj.transform;
-                Snapshot.ObjectSnapshot objectSnapshot = new()
+                var objectSnapshot = new Snapshot.ObjectSnapshot
                 {
                     transform = new()
                     {
@@ -98,13 +104,13 @@ namespace dev.hongjun.mc
                     {
                         continue;
                     }
-                    
+
                     foreach (var field in fields)
                     {
                         objectSnapshot.AddField(type, field, field.GetValue(componentToSerialize));
                     }
                 }
-                
+
                 snapshot[obj] = objectSnapshot;
             }
 
@@ -116,6 +122,29 @@ namespace dev.hongjun.mc
         /// </summary>
         public void RestoreSnapshot(Snapshot snapshot)
         {
+            var objects = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var obj in objects)
+            {
+                var objTransform = obj.transform;
+                var objectSnapshot = snapshot[obj];
+                objTransform.position = objectSnapshot.transform.position;
+                objTransform.rotation = objectSnapshot.transform.rotation;
+                objTransform.localScale = objectSnapshot.transform.localScale;
+
+                foreach (var (type, fields) in toSerialize)
+                {
+                    var componentToRestore = obj.GetComponent(type) as MonoBehaviour;
+                    if (componentToRestore == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var field in fields.Where(field => objectSnapshot.HasField(type, field)))
+                    {
+                        field.SetValue(componentToRestore, objectSnapshot.GetField(type, field));
+                    }
+                }
+            }
         }
     }
 }
